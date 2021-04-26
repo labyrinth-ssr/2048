@@ -56,7 +56,7 @@ void printInterface(){
     "please input the number:");
 }
 
-void Map:: printMap() const{//带清屏的打印
+void Map:: printMap() const{
     for (int i=0;i<length;i++){
         for (int j=0;j<length;j++){
             cout<<"+-----";
@@ -144,70 +144,62 @@ void Map:: merges(){
     }
 }
 
-void Map:: movew(){
+void Map:: movew(){//{w:}
     for (int j=0;j<length;j++){
-        for (int i=0;i<length-1;i++){
-            int k=i;
-            while(k<length&&str[k][j]==0){
-                k++;
+        int k=0;
+        for (int i=0;i<length;i++){
+            if(str[i][j]!=0){
+                str[k++][j]=str[i][j];
             }
-            for (int l=i,m=k;m<length;l++,m++){
-                str[l][j]=str[m][j];
-            }
-            for (int l=0;l<k-i;l++){
-                str[length-1-l][j]=0;
-            }
+            else continue;
+        }
+        for (;k<length;k++){
+                str[k][j]=0;
         }
     }
 }
 
 void Map:: movez(){
     for (int j=0;j<length;j++){
+        int k=length-1;
         for (int i=length-1;i>=0;i--){
-            int k=i;
-            while(k>=0&&str[k][j]==0){
-                k--;
+            if(str[i][j]!=0){
+                str[k--][j]=str[i][j];
             }
-            for (int l=i,m=k;m>=0;l--,m--){
-                str[l][j]=str[m][j];
-            }
-            for (int l=length-1;l>length-1-i+k;l--){
-                str[length-1-l][j]=0;
-            }
+            else continue;
+        }
+        for (;k>=0;k--){
+                str[k][j]=0;
         }
     }
 }
 
 void Map:: movea(){
     for (int j=0;j<length;j++){
-        for (int i=0;i<length-1;i++){
-            int k=i;
-            while(k<length&&str[j][k]==0){
-                k++;
+        int k=0;
+        for (int i=0;i<length;i++){
+            if(str[j][i]!=0){
+                str[j][k++]=str[j][i];
             }
-            for (int l=i,m=k;m<length;l++,m++){
-                str[j][l]=str[j][m];
-            }
-            for (int l=0;l<k-i;l++){
-                str[j][length-1-l]=0;
-            }
+            else continue;
+        }
+        for (;k<length;k++){
+                str[j][k]=0;
         }
     }
 }
 
 void Map:: moves(){
     for (int j=0;j<length;j++){
+        int k=length-1;
         for (int i=length-1;i>=0;i--){
-            int k=i;
-            while(k>=0&&str[j][k]==0){
-                k--;
+            if(str[j][i]!=0){
+                str[j][k--]=str[j][i];
             }
-            for (int l=i,m=k;m>=0;l--,m--){
-                str[j][l]=str[j][m];
-            }
-            for (int l=length-1;l>length-1-i+k;l--){
-                str[j][length-1-l]=0;
-            }
+            else continue;
+        }
+        for (;k>=0;k--){
+                str[j][k]=0;
         }
     }
 }
@@ -358,7 +350,7 @@ void Map::getCheat(string& input){
         cout<<"cheat effect open"<<endl;
         cout<<cheated<<"is cheated"<<endl;
         cout<<word[1]<<"is the parameter."<<endl;
-        fflush(stdin);
+        std::fflush(stdin);
         cin>>input;
     }
     }
@@ -400,7 +392,7 @@ int main(int argc,char* argv[]){
         game_map.setUsername();
     }
     game_map.iniMap();
-    fflush(stdin);
+    std::fflush(stdin);
     while(1){
         game_map.printMap();
         game_map.judgePlayer();
@@ -421,7 +413,7 @@ int main(int argc,char* argv[]){
         game_map.checkCheated(input);
         game_map.getCheat(input);
         game_map.updateWithInput(input,0);
-        fflush(stdin);       
+        std::fflush(stdin);       
     }
     return 0;
 } 
