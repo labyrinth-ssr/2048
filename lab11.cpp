@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <getopt.h>
+#include <unordered_map>
 
 using namespace std;
 using namespace className;
@@ -46,8 +47,8 @@ void Map::setMode(){
     cout<<"the mode is:"<<playerNumber<<endl;
 }
 
-void Map::add_score(int i,int j){
-    score[player]+=str[i][j];
+void Map::add_score(int i){
+    score[player]+=str[i];
 }
 
 void printInterface(){      
@@ -63,10 +64,10 @@ void Map:: printMap() const{
         }
         cout<<"+"<<endl;
         for (int j=0;j<length;j++){
-            if(str[i][j]==0)
+            if(str[i*length+j]==0)
             printf("|     ");
             else{
-                printf("|%5d",str[i][j]);
+                printf("|%5d",str[i*length+j]);
             }
         }printf("|\n");
     }
@@ -80,179 +81,69 @@ void Map:: printMap() const{
 void Map:: getRandom(){
     srand((unsigned)time(NULL));
     int x,y;
-    while(str[x=rand()%length][y=rand()%length]!=0){
+    while(str[(x=rand()%length)*length+(y=rand()%length)]!=0){
         ;
     }
-    str[x][y]=2;
+    str[x*length+y]=2;
 }
 
 void Map:: iniMap(){
-    for (int i=0;i<length;i++){
-        for(int j=0;j<length;j++){
-            str[i][j]=0;
-        }
-    }
     getRandom();
     getRandom();
 }
 
-void Map:: mergew(){
+void Map:: merge(char c){
     for (int j=0;j<length;j++){
-        for (int i=0;i<length-1;i++){
-            if(str[i][j]==str[i+1][j]){
-                str[i][j] *=2;
-                add_score(i,j);
-                str[i+1][j] =0;
+        for (int i=m[c][0];i>=0&&i<length;i+=m[c][1]){
+            if(str[i*m[c][2]+j*m[c][3]]==str[(i+m[c][1])*m[c][2]+j*m[c][3]]){
+                str[i*m[c][2]+j*m[c][3]] *=2;
+                add_score(i*m[c][2]+j*m[c][3]);
+                str[(i+m[c][1])*m[c][2]+j*m[c][3]] =0;
             }
         }
     }
 }
-
-void Map:: mergea(){
+    //vector<int> w={0,1,length,1},z={length,-1,length,1},a{0,1,1,length},s{length,-1,1,length};
+void Map:: move(char c){//{w:}
+    length=4;
     for (int j=0;j<length;j++){
-        for (int i=0;i<length-1;i++){
-            if(str[j][i]==str[j][i+1]){
-                str[j][i] *=2;
-                add_score(j,i);
-                str[j][i+1] =0;
-            }
-        }
-    }
-}
-
-void Map:: mergez(){
-    for (int j=0;j<length;j++){
-        for (int i=length-1;i>0;i--){
-            if(str[i][j]==str[i-1][j]){
-                str[i][j] *=2;
-                add_score(i,j);
-                str[i-1][j] =0;
-            }
-        }
-    }
-}
-
-void Map:: merges(){
-    for (int j=0;j<length;j++){
-        for (int i=length-1;i>0;i--){
-            if(str[j][i]==str[j][i-1]){
-                str[j][i] *=2;
-                add_score(j,i);
-                str[j][i-1] =0;
-            }
-        }
-    }
-}
-
-void Map:: movew(){//{w:}
-    for (int j=0;j<length;j++){
-        int k=0;
-        for (int i=0;i<length;i++){
-            if(str[i][j]!=0){
-                str[k++][j]=str[i][j];
+        int k=m[c][0];
+        for (int i=m[c][0];i>=0&&i<length;i+=m[c][1]){
+            if(str[i*m[c][2]+j*m[c][3]]!=0){
+                str[k*m[c][2]+j*m[c][3]]=str[i*m[c][2]+j*m[c][3]];
+                k++;
             }
             else continue;
         }
-        for (;k<length;k++){
-                str[k][j]=0;
-        }
-    }
-}
-
-void Map:: movez(){
-    for (int j=0;j<length;j++){
-        int k=length-1;
-        for (int i=length-1;i>=0;i--){
-            if(str[i][j]!=0){
-                str[k--][j]=str[i][j];
-            }
-            else continue;
-        }
-        for (;k>=0;k--){
-                str[k][j]=0;
-        }
-    }
-}
-
-void Map:: movea(){
-    for (int j=0;j<length;j++){
-        int k=0;
-        for (int i=0;i<length;i++){
-            if(str[j][i]!=0){
-                str[j][k++]=str[j][i];
-            }
-            else continue;
-        }
-        for (;k<length;k++){
-                str[j][k]=0;
-        }
-    }
-}
-
-void Map:: moves(){
-    for (int j=0;j<length;j++){
-        int k=length-1;
-        for (int i=length-1;i>=0;i--){
-            if(str[j][i]!=0){
-                str[j][k--]=str[j][i];
-            }
-            else continue;
-        }
-        for (;k>=0;k--){
-                str[j][k]=0;
+        for (;k>=0&&k<length;k+=m[c][1]){
+                str[k*m[c][2]+j*m[c][3]]=0;
         }
     }
 }
 
 bool Map::check_win(){
-    for (int i=0;i<length;i++){
-        for (int j=0;j<length;j++){
-            if (str[i][j]==winCondition)
-                return true;
-        }
+    for (int i=0;i<length*length;i++){        
+            if (str[i]==winCondition)
+                return true;        
     }
     return false;
 }
 
 void Map::updateWithInput(string input,int i){
-    vector<vector<int>> copy=str;
-    switch (input[i]){
-        case 'w':
-        movew();   
-        mergew();
-        movew();
-        if (copy==str) break;
-        getRandom();
-        break;
-        case 'z':
-        movez();
-        mergez();
-        movez();
-        if (copy==str) break;
-        getRandom();
-        break;
-        case 'a':
-        movea();
-        mergea();
-        movea();
-        if (copy==str) break;
-        getRandom();
-        break;
-        case 's':
-        moves();
-        merges();
-        moves();
-        if (copy==str) break;
-        getRandom();
-    }
+    vector<int> copy=str;
+    char c=input[i];
+    move(c);
+    cout<<"moved"<<endl;
+    merge(c);
+    move(c);
+    if (copy!=str) getRandom();
     addCount();
-    
 }
 
 bool Map::is_full(){
     for (int i=0;i<length;i++){
         for (int j=0;j<length;j++){
-            if (str[i][j]==0){
+            if (str[i*length+j]==0){
                 return false;
             }
         }
@@ -261,7 +152,7 @@ bool Map::is_full(){
 }
 
 bool Map::check_lose(){
-    vector<vector<int>> copy1=str;
+    vector<int> copy1=str;
     vector<int> saveScore=score;
     string input="wazs";
         for (int i=0;i<4;i++){
@@ -300,8 +191,7 @@ void Map::getDemand(){
     for(int i=0;i<4;i++){
         if(direction[i]=='w'||direction[i]=='a'||direction[i]=='z'||direction[i]=='s'){
            save1.push_back(direction[i]);
-        }
-        
+        }  
     }
     cout<<"check:these directions can be moved"<<save1<<endl;
     cout<<"the size of the save1 is:"<<save1.size()<<endl;
