@@ -105,13 +105,12 @@ void Map:: merge(char c){
 }
     //vector<int> w={0,1,length,1},z={length,-1,length,1},a{0,1,1,length},s{length,-1,1,length};
 void Map:: move(char c){//{w:}
-    length=4;
     for (int j=0;j<length;j++){
         int k=m[c][0];
         for (int i=m[c][0];i>=0&&i<length;i+=m[c][1]){
             if(str[i*m[c][2]+j*m[c][3]]!=0){
                 str[k*m[c][2]+j*m[c][3]]=str[i*m[c][2]+j*m[c][3]];
-                k++;
+                k+=m[c][1];
             }
             else continue;
         }
@@ -268,11 +267,6 @@ int main(int argc,char* argv[]){
                     return 0;
                 }
                 game_map.setLength(atoi(optarg));
-                break;
-            label:case '?':
-                printf("error optopt: %c\n", optopt);
-                printf("error opterr: %d\n", opterr);
-                return 0;
                 break;
         }
     }

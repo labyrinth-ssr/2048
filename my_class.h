@@ -64,6 +64,8 @@ namespace className{
     void setLength(int i){
         length=i;
         str.resize(i*i);
+        m['w']={0,1,length,1};m['z']={length-1,-1,length,1};m['a']={0,1,1,length},m['s']={length-1,-1,1,length};
+
     }
 };
 
