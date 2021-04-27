@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <unordered_map>
 
 using namespace std;
 
@@ -8,7 +9,6 @@ using namespace std;
 #define MY_CLASS_H
 namespace className{
     class Map{
-    //after examining,the only directon can be moved will be the demand.
     char demand='\0';
     char direction[4]={'w','a','z','s'};
     string word[2];//parameters for cheat
@@ -19,36 +19,28 @@ namespace className{
     int gameCount=1;//gameCount
     int player=0;
     int length=4;
+    vector<int> w={0,1,length,1},z={length-1,-1,length,1},a{0,1,1,length},s{length-1,-1,1,length};
+    unordered_map<char,vector<int>> m{{'w',w},{'z',z},{'a',a},{'s',s}};
     vector<int> score={0,0,0};
     string username[2];
-    vector<vector<int>> str={{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    vector<int> str{vector<int>(16,0)};
     bool cheatMode=false;
     void getRandom(); 
-    void mergew();
-    void mergea();
-    void mergez();
-    void merges();
-    void movew();
-    void movea();
-    void movez();
-    void moves();
-    void add_score(int ,int);
+    void merge(char);
+    void move(char);
+    void add_score(int);
     void addCount(){
         gameCount++;
     }
     bool is_full();
     void getDemand();//only one direction to go
+    
     public:
     int getCount(){
         return gameCount;
     }
     void setTestMode(char*);
     Map()=default;
-    Map(int i){
-        length=i;
-        vector<int> temp(i);
-        str.resize(i,temp);      
-    }
     void iniMap();
     void printMap() const;
     void getTurnAddPrintScore();
@@ -71,8 +63,7 @@ namespace className{
     }
     void setLength(int i){
         length=i;
-        vector<int> temp(i);
-        str.resize(i,temp);
+        str.resize(i*i);
     }
 };
 
